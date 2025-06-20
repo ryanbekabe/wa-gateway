@@ -14,6 +14,7 @@ import { createWebhookMessage } from "./webhooks/message";
 import { createWebhookSession } from "./webhooks/session";
 import { createProfileController } from "./controllers/profile";
 import { serveStatic } from "@hono/node-server/serve-static";
+import { askOllama } from "./ollama";
 
 const app = new Hono();
 
@@ -92,5 +93,74 @@ if (env.WEBHOOK_BASE_URL) {
   });
 }
 // End Implement Webhook
+
+// Auto-reply: balas otomatis setiap kali pesan masuk, hanya 1x per pengirim
+const autoReplySent = new Set<string>();
+whastapp.onMessageReceived(async (msg) => {
+  // Ambil isi pesan teks
+  const text =
+    msg.message?.conversation ||
+    msg.message?.extendedTextMessage?.text ||
+    msg.message?.imageMessage?.caption ||
+    msg.message?.videoMessage?.caption ||
+    msg.message?.documentMessage?.caption ||
+    msg.message?.contactMessage?.displayName ||
+    msg.message?.locationMessage?.comment ||
+    msg.message?.liveLocationMessage?.caption ||
+    null;
+
+  const to = msg.key.remoteJid;
+  // Gunakan kombinasi sessionId dan remoteJid sebagai key unik
+  const replyKey = `${msg.sessionId}:${to}`;
+  if (text && to && text.toLowerCase().includes("halov2") && !autoReplySent.has(replyKey)) {
+    await whastapp.sendTextMessage({
+      sessionId: msg.sessionId,
+      to,
+      text: "Halo juga! Ini adalah balasan otomatis. v2",
+    });
+    autoReplySent.add(replyKey);
+  }
+});
+
+// Auto-reply: aktif jika disummon dengan @HaiNeoBot, parameter setelahnya diproses
+const botSummon = "@HaiNeoBot";
+whastapp.onMessageReceived(async (msg) => {
+  const text =
+    msg.message?.conversation ||
+    msg.message?.extendedTextMessage?.text ||
+    msg.message?.imageMessage?.caption ||
+    msg.message?.videoMessage?.caption ||
+    msg.message?.documentMessage?.caption ||
+    msg.message?.contactMessage?.displayName ||
+    msg.message?.locationMessage?.comment ||
+    msg.message?.liveLocationMessage?.caption ||
+    null;
+
+  const to = msg.key.remoteJid;
+  if (!text || !to) return;
+
+  // Cek apakah pesan diawali summon bot
+  if (text.trim().startsWith(botSummon)) {
+    // Ambil parameter setelah summon
+    const param = text.trim().slice(botSummon.length).trim();
+    let reply = null;
+    if (/^jam berapa sekarang\??$/i.test(param)) {
+      // Balas dengan jam saat ini
+      const now = new Date();
+      const jam = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      reply = `Sekarang jam ${jam}`;
+    } else if (param) {
+      // Kirim ke Ollama jika ada parameter lain
+      reply = await askOllama(param);
+    }
+    if (reply) {
+      await whastapp.sendTextMessage({
+        sessionId: msg.sessionId,
+        to,
+        text: reply,
+      });
+    }
+  }
+});
 
 whastapp.loadSessionsFromStorage();

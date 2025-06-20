@@ -7,7 +7,7 @@ Easy Setup Headless multi session Whatsapp Gateway with NodeJS
 - Send Text Message
 - Send Image
 - Send Document
-- tes
+- Ollama Integrated
 
 #### Read also [wa-multi-session](https://github.com/mimamch/wa-multi-session)
 
