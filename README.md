@@ -7,6 +7,7 @@ Easy Setup Headless multi session Whatsapp Gateway with NodeJS
 - Send Text Message
 - Send Image
 - Send Document
+- tes
 
 #### Read also [wa-multi-session](https://github.com/mimamch/wa-multi-session)
 
@@ -44,12 +45,16 @@ Easy Setup Headless multi session Whatsapp Gateway with NodeJS
 
 ```
 http://localhost:5001/session/start?session=mysession
+http://localhost:5001/session/start?session=mysessionb
+
 ```
 
 #### 6. Sending first message
 
 ```
 http://localhost:5001/message/send-text?session=mysession&to=628123456789&text=Hello
+http://localhost:5001/message/send-text?session=mysession&to=6282254205110&text=Hello
+http://localhost:5001/message/send-text?session=mysessionb&to=6282254205110&text=Hellob
 ```
 
 ## API Reference

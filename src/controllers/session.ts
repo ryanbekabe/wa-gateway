@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createKeyMiddleware } from "../middlewares/key.middleware";
 import { toDataURL } from "qrcode";
 import { HTTPException } from "hono/http-exception";
+import * as qrcodeTerminal from "qrcode-terminal";
 
 export const createSessionController = () => {
   const app = new Hono();
@@ -39,6 +40,10 @@ export const createSessionController = () => {
             r(null);
           },
           onQRUpdated(qr) {
+            // Cetak QR ke terminal
+            if (qr) {
+              qrcodeTerminal.generate(qr, { small: true });
+            }
             r(qr);
           },
         });
@@ -77,6 +82,10 @@ export const createSessionController = () => {
             r(null);
           },
           onQRUpdated(qr) {
+            // Cetak QR ke terminal
+            if (qr) {
+              qrcodeTerminal.generate(qr, { small: true });
+            }
             r(qr);
           },
         });
