@@ -3,3 +3,4 @@ wa_credentials/
 .env
 media/*
 !media/.gitkeep
+# Pastikan file .env dan folder wa_credentials tidak pernah di-push ke repo

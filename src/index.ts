@@ -15,6 +15,7 @@ import { createWebhookSession } from "./webhooks/session";
 import { createProfileController } from "./controllers/profile";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { askOllama } from "./ollama";
+import { askAIMLAPI } from "./aimlapi";
 
 const app = new Hono();
 
@@ -123,7 +124,7 @@ whastapp.onMessageReceived(async (msg) => {
 });
 
 // Auto-reply: aktif jika disummon dengan @HaiNeoBot, parameter setelahnya diproses
-const botSummon = "@HaiNeoBot";
+const botSummon = "@Bang Sam";
 whastapp.onMessageReceived(async (msg) => {
   const text =
     msg.message?.conversation ||
@@ -142,16 +143,29 @@ whastapp.onMessageReceived(async (msg) => {
   // Cek apakah pesan diawali summon bot
   if (text.trim().startsWith(botSummon)) {
     // Ambil parameter setelah summon
-    const param = text.trim().slice(botSummon.length).trim();
+    let param = text.trim().slice(botSummon.length).trim();
     let reply = null;
+    // Pilih AI: aiml/ollama
+    let ai = "aiml";
+    if (/^ollama\s+/i.test(param)) {
+      ai = "ollama";
+      param = param.replace(/^ollama\s+/i, "").trim();
+    } else if (/^aiml\s+/i.test(param)) {
+      ai = "aiml";
+      param = param.replace(/^aiml\s+/i, "").trim();
+    }
     if (/^jam berapa sekarang\??$/i.test(param)) {
       // Balas dengan jam saat ini
       const now = new Date();
       const jam = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
       reply = `Sekarang jam ${jam}`;
     } else if (param) {
-      // Kirim ke Ollama jika ada parameter lain
-      reply = await askOllama(param);
+      // Kirim ke AI sesuai pilihan
+      if (ai === "aiml") {
+        reply = await askAIMLAPI(param);
+      } else {
+        reply = await askOllama(param);
+      }
     }
     if (reply) {
       await whastapp.sendTextMessage({

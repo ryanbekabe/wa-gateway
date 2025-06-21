@@ -21,6 +21,7 @@ Easy Setup Headless multi session Whatsapp Gateway with NodeJS
 
 ```bash
   git clone https://github.com/mimamch/wa_gateway.git
+  git clone https://github.com/ryanbekabe/wa_gateway.git
 ```
 
 #### 2. Go to the project directory
@@ -211,6 +212,14 @@ http://localhost:5001/media/3A5089C2F2652D46EBC5.jpg
 
 ```
 npm install wa-multi-session@latest
+```
+
+## Upgrading
+
+```
+git add .
+git commit -m "Commit 2/com 83"
+git push
 ```
 
 ## Documentation
