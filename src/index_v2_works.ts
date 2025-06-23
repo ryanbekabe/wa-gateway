@@ -16,7 +16,6 @@ import { createProfileController } from "./controllers/profile";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { askOllama } from "./ollama";
 import { askAIMLAPI } from "./aimlapi";
-import { askDeepSeek } from "./deepseek";
 
 const app = new Hono();
 
@@ -114,18 +113,18 @@ whastapp.onMessageReceived(async (msg) => {
   const to = msg.key.remoteJid;
   // Gunakan kombinasi sessionId dan remoteJid sebagai key unik
   const replyKey = `${msg.sessionId}:${to}`;
-  if (text && to && text.toLowerCase().includes("halov3") && !autoReplySent.has(replyKey)) {
+  if (text && to && text.toLowerCase().includes("halov2") && !autoReplySent.has(replyKey)) {
     await whastapp.sendTextMessage({
       sessionId: msg.sessionId,
       to,
-      text: "Halo juga! Ini adalah balasan otomatis. v3",
+      text: "Halo juga! Ini adalah balasan otomatis. v2",
     });
     autoReplySent.add(replyKey);
   }
 });
 
-// Auto-reply: aktif jika disummon dengan @Bang Sam, parameter setelahnya diproses
-const botSummon = "@BangSam";
+// Auto-reply: aktif jika disummon dengan @HaiNeoBot, parameter setelahnya diproses
+const botSummon = "@Bang Sam";
 whastapp.onMessageReceived(async (msg) => {
   const text =
     msg.message?.conversation ||
@@ -146,7 +145,7 @@ whastapp.onMessageReceived(async (msg) => {
     // Ambil parameter setelah summon
     let param = text.trim().slice(botSummon.length).trim();
     let reply = null;
-    // Pilih AI: aiml/ollama (deepseek dinonaktifkan)
+    // Pilih AI: aiml/ollama
     let ai = "aiml";
     if (/^ollama\s+/i.test(param)) {
       ai = "ollama";
@@ -154,10 +153,6 @@ whastapp.onMessageReceived(async (msg) => {
     } else if (/^aiml\s+/i.test(param)) {
       ai = "aiml";
       param = param.replace(/^aiml\s+/i, "").trim();
-    } else if (/^deepseek\s+/i.test(param)) {
-      // DeepSeek dinonaktifkan, abaikan prefix dan tetap gunakan AIML
-      ai = "aiml";
-      param = param.replace(/^deepseek\s+/i, "").trim();
     }
     if (/^jam berapa sekarang\??$/i.test(param)) {
       // Balas dengan jam saat ini

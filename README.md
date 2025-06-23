@@ -217,8 +217,10 @@ npm install wa-multi-session@latest
 ## Upgrading
 
 ```
+* * * * * cd /home/hanyajasa22042025/git/nodeapp/wa-gateway && npm run start
+
 git add .
-git commit -m "Commit 2/com 83"
+git commit -m "Commit 4/com 84"
 git push
 ```
 
