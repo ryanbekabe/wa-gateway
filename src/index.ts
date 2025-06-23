@@ -124,7 +124,7 @@ whastapp.onMessageReceived(async (msg) => {
   }
 });
 
-// Auto-reply: aktif jika disummon dengan @Bang Sam, parameter setelahnya diproses
+// Auto-reply: aktif jika disummon dengan @BangSam, parameter setelahnya diproses
 const botSummon = "@BangSam";
 whastapp.onMessageReceived(async (msg) => {
   const text =
